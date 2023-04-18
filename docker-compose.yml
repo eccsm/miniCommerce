@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+
+  minicommerce:
+    image: eccsm/minicommerce:latest
+    network_mode: host
+    mem_limit: 700m
+    ports:
+      - "8080:8080"
+    networks:
+      - eccsm-network
+    
+  customer:
+    image: eccsm/customerservice:latest
+    network_mode: host
+    mem_limit: 700m
+    ports:
+      - "8110:8110"
+    networks:
+      - eccsm-network
+    
+  cards:
+    image: eccsm/orderservice:latest
+    network_mode: host
+    mem_limit: 700m
+    ports:
+      - "8100:8100"
+    networks:
+      - eccsm-network
+
+  products:
+    image: eccsm/productservice:latest
+    network_mode: host
+    mem_limit: 700m
+    ports:
+      - "8090:8090"
+    networks:
+      - eccsm-network
+    
+networks:
+  eccsm-network:

@@ -10,9 +10,9 @@
 		<relativePath />
 	</parent>
 	<groupId>tr.nttdata.poc.minicommerce</groupId>
-	<artifactId>POC</artifactId>
+	<artifactId>minicommerce</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>POC</name>
+	<name>minicommerce</name>
 	<description>Mini Commerce Application</description>
 	<properties>
 		<java.version>17</java.version>
@@ -122,8 +122,6 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<version>1.4.200</version>
-			<scope>runtime</scope>
 		</dependency>
 
 	</dependencies>
@@ -133,6 +131,11 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<image>
+						<name>eccsm/${project.artifactId}</name>
+					</image>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

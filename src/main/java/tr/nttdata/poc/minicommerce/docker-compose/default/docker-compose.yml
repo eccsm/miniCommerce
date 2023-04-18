@@ -2,23 +2,23 @@ version: "3.8"
 
 services:
 
-  configserver:
-    image: nttdata/configserver:latest
+  config:
+    image: eccsm/config:latest
     mem_limit: 700m
     ports:
       - "8071:8071"
     networks:
-     - nttdata
+     - eccsm
    
   eurekaserver:
-    image: nttdata/eurekaserver:latest
+    image: eccsm/eurekaserver:latest
     mem_limit: 700m
     ports:
       - "8070:8070"
     networks:
-     - nttdata
+     - eccsm
     depends_on:
-      - configserver
+      - config
     deploy:
       restart_policy:
         condition: on-failure
@@ -30,14 +30,15 @@ services:
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
       
   minicommerce:
-    image: nttdata/minicommerce:latest
+    image: eccsm/minicommerce:latest
+    network_mode: host
     mem_limit: 700m
     ports:
       - "8080:8080"
     networks:
-      - eazybank
+      - eccsm
     depends_on:
-      - configserver
+      - config
       - eurekaserver
     deploy:
       restart_policy:
@@ -47,18 +48,18 @@ services:
         window: 120s
     environment:
       SPRING_PROFILES_ACTIVE: default
-      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+      SPRING_CONFIG_IMPORT: configserver:http://config:8071/
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
   
   orders:
-    image: nttdata/mini-commerce-order-service:latest
+    image: eccsm/orderservice:latest
     mem_limit: 700m
     ports:
       - "8090:8090"
     networks:
-      - nttdata
+      - eccsm
     depends_on:
-      - configserver
+      - config
       - eurekaserver
     deploy:
       restart_policy:
@@ -68,18 +69,18 @@ services:
         window: 120s
     environment:
       SPRING_PROFILES_ACTIVE: default
-      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+      SPRING_CONFIG_IMPORT: configserver:http://config:8071/
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
     
   products:
-    image: nttdata/product-service:latest
+    image: eccsm/productservice:latest
     mem_limit: 700m
     ports:
       - "9000:9000"
     networks:
-      - nttdata
+      - eccsm
     depends_on:
-      - configserver
+      - config
       - eurekaserver
     deploy:
       restart_policy:
@@ -89,18 +90,18 @@ services:
         window: 120s
     environment:
       SPRING_PROFILES_ACTIVE: default
-      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+      SPRING_CONFIG_IMPORT: configserver:http://config:8071/
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
 
   customers:
-    image: nttdata/customer-service:latest
+    image: eccsm/customerservice:latest
     mem_limit: 700m
     ports:
       - "9000:9000"
     networks:
-      - nttdata
+      - eccsm
     depends_on:
-      - configserver
+      - config
       - eurekaserver
     deploy:
       restart_policy:
@@ -110,22 +111,25 @@ services:
         window: 120s
     environment:
       SPRING_PROFILES_ACTIVE: default
-      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+      SPRING_CONFIG_IMPORT: configserver:http://config:8071/
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
-   
+
+
   gatewayserver:
-    image: nttdata/gatewayserver:latest
+    image: eccsm/gatewayserver:latest
     mem_limit: 700m
     ports:
       - "8072:8072"
     networks:
-      - nttdata
+      - eccsm
     depends_on:
-      - configserver
+      - config
       - eurekaserver
-      - cards
-      - loans
-      - accounts
+      - minicommerce
+      - products
+      - customers
+      - orders
+
     deploy:
       restart_policy:
         condition: on-failure
@@ -134,8 +138,8 @@ services:
         window: 180s
     environment:
       SPRING_PROFILES_ACTIVE: default
-      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+      SPRING_CONFIG_IMPORT: configserver:http://config:8071/
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
       
 networks:
-  eazybank:
+  eccsm:
